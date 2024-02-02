@@ -35,6 +35,8 @@ class BusAppAwsStack(Stack):
         self.get_geo_location_lambda = self.create_get_geo_location_from_ddb_lambda(
             **kwargs
         )
+        self.save_geo_location_api = self.create_save_geo_location_api(**kwargs)
+        self.get_geo_location_api = self.create_get_geo_location_api(**kwargs)
 
     def create_textract_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
