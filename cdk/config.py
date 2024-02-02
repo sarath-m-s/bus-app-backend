@@ -72,7 +72,6 @@ class Config:
                 "type": "lambda",
             },
             "part_path": GET_GEO_LOCATION_API_GATEWAY_PATH,
-            "model_schema": self.__form_data_model_schema,
             "method": "GET",
         }
 
