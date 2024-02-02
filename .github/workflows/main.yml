@@ -1,0 +1,83 @@
+name: Textract POC
+
+on:
+  push:
+    branches:
+      - main
+      - "feat/*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image
+        run: docker build . -t lambda-deployment-package
+
+      - name: Run Docker container to create deployment package
+        run: docker run --name lambda-deployment-package lambda-deployment-package > /dev/null 2>&1
+
+      - name: Copy deployment package from Docker container
+        run: docker cp lambda-deployment-package:/app/deployment.zip backend/main/lambda_functions
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m venv .env
+          source .env/bin/activate
+          pip install -r requirements.txt
+
+      - name: Set PYTHONPATH and print Python interpreter and Python path
+        run: |
+          source .env/bin/activate
+          export PYTHONPATH=$(python -c "import site; print(site.getsitepackages()[0])")
+          which python
+          echo $PYTHONPATH
+
+      - name: Install AWS CDK
+        run: |
+          npm install -g aws-cdk
+
+      - name: Build
+        run: |
+          source .env/bin/activate
+          cdk synth
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+
+      - name: Bootstrap
+        run: |
+          source .env/bin/activate
+          cdk bootstrap
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+
+      - name: Deploy
+        run: |
+          source .env/bin/activate
+          cdk deploy --all --require-approval never
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
