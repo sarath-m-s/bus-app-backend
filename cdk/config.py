@@ -14,7 +14,7 @@ class Config:
             "lambda_function": {
                 "function_name": SAVE_INCOMING_GEO_LOCATION_LAMBDA,
                 "asset_path": "backend/main/lambda_functions",
-                "handler": "analyze_document.handler",
+                "handler": "persist_data.handler",
                 "runtime": "python3.8",
                 "timeout": 300,
                 "memory_size": 128,
@@ -33,7 +33,7 @@ class Config:
             "lambda_function": {
                 "function_name": GET_GEO_LOCATION_LAMBDA,
                 "asset_path": "backend/main/lambda_functions",
-                "handler": "analyze_id.handler",
+                "handler": "get_form_data_by_execution_id.handler",
                 "runtime": "python3.8",
                 "timeout": 300,
                 "memory_size": 128,
