@@ -10,22 +10,14 @@ logger.setLevel(logging.INFO)
 
 
 def handler(event, context):
-    """
-    Expected Json
-    {
-        "bus_id": "bus_id",
-        "geo_location": {
-            "lat": "lat",
-            "lng": "lng"
-        }
-    }
-    """
-
     logger.info(f"Event: {event}")
 
-    if "body" in event and event["body"]:
+    if ("body" in event) and event["body"]:
         helper = Helper()
         body = json.loads(event["body"])
+        if "payload" in body:
+            body = json.loads(body["payload"])
+
         logger.info(f"Body: {body}")
         bus_id = body.get("bus_id", None)
         geo_location_sync_id = helper.generate_unique_id()
