@@ -4,9 +4,8 @@ import uuid
 import boto3
 from botocore.exceptions import ClientError
 import logging
-from decimal import Decimal
 from constants import *
-from data_retrieval_settings import DataRetrievalSettings
+from boto3.dynamodb.conditions import Key
 
 
 logger = logging.getLogger()
@@ -16,7 +15,6 @@ logger.setLevel(logging.INFO)
 class Helper:
     def __init__(self) -> None:
         self.textract_client = boto3.client("textract")
-        self.data_retreval_settings = DataRetrievalSettings()
 
     def generate_unique_id(self):
         return str(uuid.uuid4())
@@ -36,8 +34,8 @@ class Helper:
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table(GEO_LOCATION_TABLE)
         try:
-            response = table.get_item(Key={"bus_id": bus_id})
-            return response["Item"]
+            response = table.query(KeyConditionExpression=Key("bus_id").eq(bus_id))
+            return response["Items"]
         except ClientError as e:
             logger.error(e.response["Error"]["Message"])
             return None

@@ -21,12 +21,15 @@ def handler(event, context):
         logger.info(f"Body: {body}")
         bus_id = body.get("bus_id", None)
         geo_location_sync_id = helper.generate_unique_id()
+        current_time = int(time.time())
+
         if bus_id:
             geo_location = body.get("geo_location", None)
             data = {
                 "bus_id": bus_id,
                 "geo_location": geo_location,
                 "sync_id": geo_location_sync_id,
+                "created_at": current_time,
             }
 
             if geo_location:
