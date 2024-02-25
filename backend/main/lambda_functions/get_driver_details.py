@@ -5,6 +5,7 @@ import time
 
 from constants import *
 from helper import Helper
+from json_encoder import DecimalEncoder
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -27,7 +28,7 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": json.dumps(driver),
+                "body": json.dumps(driver, cls=DecimalEncoder),
             }
         else:
             return {

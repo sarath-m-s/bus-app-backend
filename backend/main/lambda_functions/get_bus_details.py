@@ -5,6 +5,7 @@ import time
 
 from constants import *
 from helper import Helper
+from json_encoder import DecimalEncoder
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -12,6 +13,7 @@ logger.setLevel(logging.INFO)
 
 def handler(event, context):
     logger.info(f"Event: {event}")
+    json_encoder = DecimalEncoder()
 
     if event["queryStringParameters"] and "bus_id" in event["queryStringParameters"]:
         helper = Helper()
@@ -28,7 +30,7 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": json.dumps(bus),
+                "body": json.dumps(bus, cls=DecimalEncoder),
             }
         else:
             return {
