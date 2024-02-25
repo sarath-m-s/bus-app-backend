@@ -15,11 +15,10 @@ def handler(event, context):
 
     if event["queryStringParameters"] and "bus_id" in event["queryStringParameters"]:
         helper = Helper()
-        bus_id = event["queryStringParameters"]["bus_id"]
-        logger.info(f"bus_id: {bus_id}")
+        route_id = event["queryStringParameters"]["route_id"]
 
-        bus = helper.get_bus_details_by_busid(bus_id)
-        if bus:
+        route = helper.get_route_details_by_route_id(route_id)
+        if route:
             return {
                 "statusCode": 200,
                 "headers": {
@@ -28,7 +27,7 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": json.dumps(bus),
+                "body": json.dumps(route),
             }
         else:
             return {
@@ -39,7 +38,7 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": '{"Error": "Bus is missing"}',
+                "body": '{"Error": "Route is missing"}',
             }
     else:
         return {
@@ -50,5 +49,5 @@ def handler(event, context):
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
             },
-            "body": '{"Error": "Bus details are missing"}',
+            "body": '{"Error": "Route details are missing"}',
         }

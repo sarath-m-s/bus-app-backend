@@ -40,6 +40,27 @@ class BusAppAwsStack(Stack):
         self.enrol_driver_ddb = self.create_enrol_driver_ddb_table(**kwargs)
         self.enrol_driver_lambda = self.create_enrol_driver_lambda(**kwargs)
         self.enrol_driver_api = self.create_enrol_driver_api(**kwargs)
+        self.get_driver_details_lambda = self.create_get_driver_details_lambda(**kwargs)
+        self.get_driver_details_api = self.create_get_driver_details_api(**kwargs)
+        self.enrol_bus_ddb = self.create_enrol_bus_ddb_table(**kwargs)
+        self.enrol_bus_lambda = self.create_enrol_bus_lambda(**kwargs)
+        self.enrol_bus_api = self.create_enrol_bus_api(**kwargs)
+        self.get_bus_details_lambda = self.create_get_bus_details_lambda(**kwargs)
+        self.get_bus_details_api = self.create_get_bus_details_api(**kwargs)
+        self.enrol_route_ddb = self.create_enrol_route_ddb_table(**kwargs)
+        self.enrol_route_lambda = self.create_enrol_route_lambda(**kwargs)
+        self.enrol_route_api = self.create_enrol_route_api(**kwargs)
+        self.get_route_details_lambda = self.create_get_route_details_lambda(**kwargs)
+        self.get_route_details_api = self.create_get_route_details_api(**kwargs)
+        self.associate_driver_bus_route_ddb_table = (
+            self.create_associate_driver_bus_route_ddb_table(**kwargs)
+        )
+        self.associate_driver_bus_route_lambda = (
+            self.create_associate_driver_bus_route_lambda(**kwargs)
+        )
+        self.associate_driver_bus_route_api = (
+            self.create_associate_driver_bus_route_api(**kwargs)
+        )
 
     def create_textract_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
@@ -226,3 +247,371 @@ class BusAppAwsStack(Stack):
         )
 
         return enrol_driver_api
+
+    def create_get_driver_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_driver_details_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_driver_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetDriverDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_driver_details_lambda = DeployLambdaStack(
+            self,
+            "GetDriverDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_driver_details_lambda
+
+    def create_get_driver_details_api(self, **kwargs):
+        api_properties = self.config.get_config("get_driver_details_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_driver_details_lambda.lambda_function
+
+        get_driver_details_api = ApiGatewayStack(
+            self,
+            "GetDriverDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_driver_details_api
+
+    def create_enrol_bus_ddb_table(self, **kwargs):
+        ddb_table = DynamoDBStack(
+            self,
+            "EnrolBusDDBTable",
+            self.config.get_config("enrol_bus_ddb_properties"),
+            **kwargs,
+        )
+        return ddb_table
+
+    def create_enrol_bus_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config("enrol_bus_lambda_properties")
+
+        lambda_permissions = [
+            "dynamodb:PutItem",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_bus_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "EnrolBusLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        enrol_bus_lambda = DeployLambdaStack(
+            self,
+            "EnrolBusLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return enrol_bus_lambda
+
+    def create_enrol_bus_api(self, **kwargs):
+        api_properties = self.config.get_config("enrol_bus_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.enrol_bus_lambda.lambda_function
+
+        enrol_bus_api = ApiGatewayStack(
+            self,
+            "EnrolBusApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return enrol_bus_api
+
+    def create_get_bus_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config("get_bus_details_lambda_properties")
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_bus_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetBusDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_bus_details_lambda = DeployLambdaStack(
+            self,
+            "GetBusDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_bus_details_lambda
+
+    def create_get_bus_details_api(self, **kwargs):
+        api_properties = self.config.get_config("get_bus_details_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_bus_details_lambda.lambda_function
+
+        get_bus_details_api = ApiGatewayStack(
+            self,
+            "GetBusDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_bus_details_api
+
+    def create_enrol_route_ddb_table(self, **kwargs):
+        ddb_table = DynamoDBStack(
+            self,
+            "EnrolRouteDDBTable",
+            self.config.get_config("enrol_route_ddb_properties"),
+            **kwargs,
+        )
+        return ddb_table
+
+    def create_enrol_route_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config("enrol_route_lambda_properties")
+
+        lambda_permissions = [
+            "dynamodb:PutItem",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_route_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "EnrolRouteLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        enrol_route_lambda = DeployLambdaStack(
+            self,
+            "EnrolRouteLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return enrol_route_lambda
+
+    def create_enrol_route_api(self, **kwargs):
+        api_properties = self.config.get_config("enrol_route_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.enrol_route_lambda.lambda_function
+
+        enrol_route_api = ApiGatewayStack(
+            self,
+            "EnrolRouteApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return enrol_route_api
+
+    def create_get_route_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_route_details_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_route_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetRouteDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_route_details_lambda = DeployLambdaStack(
+            self,
+            "GetRouteDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_route_details_lambda
+
+    def create_get_route_details_api(self, **kwargs):
+        api_properties = self.config.get_config("get_route_details_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_route_details_lambda.lambda_function
+
+        get_route_details_api = ApiGatewayStack(
+            self,
+            "GetRouteDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_route_details_api
+
+    def create_associate_driver_bus_route_ddb_table(self, **kwargs):
+        ddb_table = DynamoDBStack(
+            self,
+            "AssociateDriverBusRouteDDBTable",
+            self.config.get_config("associate_driver_bus_route_ddb_properties"),
+            **kwargs,
+        )
+        return ddb_table
+
+    def create_associate_driver_bus_route_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "associate_driver_bus_route_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:PutItem",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.associate_driver_bus_route_ddb_table.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "AssociateDriverBusRouteLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        associate_driver_bus_route_lambda = DeployLambdaStack(
+            self,
+            "AssociateDriverBusRouteLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return associate_driver_bus_route_lambda
+
+    def create_associate_driver_bus_route_api(self, **kwargs):
+        api_properties = self.config.get_config(
+            "associate_driver_bus_route_apigw_properties"
+        )
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.associate_driver_bus_route_lambda.lambda_function
+
+        associate_driver_bus_route_api = ApiGatewayStack(
+            self,
+            "AssociateDriverBusRouteApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return associate_driver_bus_route_api

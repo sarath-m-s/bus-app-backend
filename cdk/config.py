@@ -67,6 +67,120 @@ class Config:
             "event_source_mapping_properties": {},
         }
 
+        self.__get_driver_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_DRIVER_DETAILS_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_driver_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get driver details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__enrol_bus_lambda_properties = {
+            "lambda_function": {
+                "function_name": ENROL_BUS_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "enrol_bus.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to enrol bus",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__get_bus_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_BUS_DETAILS_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_bus_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get bus details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__enrol_route_lambda_properties = {
+            "lambda_function": {
+                "function_name": ENROL_ROUTE_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "enrol_route.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to enrol route",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__get_route_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_ROUTE_DETAILS_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_route_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get route details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__associate_driver_bus_route_lambda_properties = {
+            "lambda_function": {
+                "function_name": ASSOCIATE_DRIVER_BUS_ROUTE_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "associate_driver_bus_route.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to associate driver, bus and route",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
         self.__geo_location_ddb_properties = {
             "name": GEO_LOCATION_TABLE,
             "partition_key": GEO_LOCATION_TABLE_PARTITION_KEY,
@@ -107,6 +221,87 @@ class Config:
                 "type": "lambda",
             },
             "part_path": ENROL_DRIVER_API_GATEWAY_PATH,
+            "method": "POST",
+        }
+
+        self.__get_driver_details_apigw_properties = {
+            "rest_api_name": GET_DRIVER_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_DRIVER_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
+        self.__enrol_bus_ddb_properties = {
+            "name": BUS_MASTER_TABLE,
+            "partition_key": BUS_MASTER_TABLE_PARTITION_KEY,
+        }
+
+        self.__enrol_bus_apigw_properties = {
+            "rest_api_name": ENROL_BUS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": ENROL_BUS_API_GATEWAY_PATH,
+            "method": "POST",
+        }
+
+        self.__get_bus_details_apigw_properties = {
+            "rest_api_name": GET_BUS_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_BUS_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
+        self.__enrol_route_ddb_properties = {
+            "name": ROUTE_MASTER_TABLE,
+            "partition_key": ROUTE_MASTER_TABLE_PARTITION_KEY,
+        }
+
+        self.__enrol_route_apigw_properties = {
+            "rest_api_name": ENROL_ROUTE_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": ENROL_ROUTE_API_GATEWAY_PATH,
+            "method": "POST",
+        }
+
+        self.__get_route_details_apigw_properties = {
+            "rest_api_name": GET_ROUTE_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_ROUTE_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
+        self.__associate_driver_bus_route_ddb_properties = {
+            "name": ASSOCIATION_TABLE,
+            "partition_key": ASSOCIATION_TABLE_PARTITION_KEY,
+        }
+
+        self.__associate_driver_bus_route_apigw_properties = {
+            "rest_api_name": ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH,
             "method": "POST",
         }
 

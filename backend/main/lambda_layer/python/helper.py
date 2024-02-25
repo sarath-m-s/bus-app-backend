@@ -42,13 +42,15 @@ class Helper:
 
     def save_bus_to_ddb(self, **kwargs):
         dynamodb = boto3.resource("dynamodb")
-        table = dynamodb.Table(BUS_TABLE)
+        table = dynamodb.Table(BUS_MASTER_TABLE)
         response = table.put_item(
             Item={
                 "bus_id": kwargs["bus_id"],
                 "bus_name": kwargs["bus_name"],
                 "registration_number": kwargs["registration_number"],
                 "bus_type": kwargs["bus_type"],
+                "organization": kwargs.get("organization", "Not Provided"),
+                "created_at": kwargs["created_at"],
             }
         )
 
@@ -73,6 +75,54 @@ class Helper:
                 "license_number": kwargs.get("license_number", "Not Provided"),
                 "organization": kwargs.get("organization", "Not Provided"),
                 "address": kwargs.get("address", "Not Provided"),
+                "created_at": kwargs["created_at"],
+            }
+        )
+
+    def get_driver_details_by_driver_id(self, driver_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(DRIVER_MASTER_TABLE)
+        try:
+            response = table.query(
+                KeyConditionExpression=Key("driver_id").eq(driver_id)
+            )
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+
+    def save_route_to_ddb(self, **kwargs):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ROUTE_MASTER_TABLE)
+        response = table.put_item(
+            Item={
+                "route_id": kwargs["route_id"],
+                "route_name": kwargs["route_name"],
+                "created_at": kwargs["created_at"],
+                "number_of_stops": kwargs["number_of_stops"],
+                "stops": kwargs["stops"],
+            }
+        )
+
+    def get_route_details_by_route_id(self, route_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ROUTE_MASTER_TABLE)
+        try:
+            response = table.query(KeyConditionExpression=Key("route_id").eq(route_id))
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+
+    def save_association_to_ddb(self, **kwargs):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ASSOCIATION_TABLE)
+        response = table.put_item(
+            Item={
+                "association_id": kwargs["association_id"],
+                "driver_id": kwargs["driver_id"],
+                "bus_id": kwargs["bus_id"],
+                "route_id": kwargs["route_id"],
                 "created_at": kwargs["created_at"],
             }
         )

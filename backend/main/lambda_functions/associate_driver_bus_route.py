@@ -21,13 +21,22 @@ def handler(event, context):
 
         logger.info(f"Body: {body}")
 
-        bus_id = helper.generate_unique_id()
+        driver_id = body["driver_id"]
+        bus_id = body["bus_id"]
+        route_id = body["route_id"]
         created_at = int(time.time())
+        associattion_id = helper.generate_unique_id()
 
-        body["bus_id"] = bus_id
-        body["created_at"] = created_at
+        association = {
+            "association_id": associattion_id,
+            "driver_id": driver_id,
+            "bus_id": bus_id,
+            "route_id": route_id,
+            "created_at": created_at,
+        }
 
-        helper.save_bus_to_ddb(**body)
+        helper.save_association_to_ddb(**association)
+
         return {
             "statusCode": 200,
             "headers": {
@@ -36,8 +45,9 @@ def handler(event, context):
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
             },
-            "body": '{"Bus Saved - BusId": "%s"}' % bus_id,
+            "body": '{"Association Saved - AssociationId": "%s"}' % associattion_id,
         }
+
     else:
         return {
             "statusCode": 400,
@@ -47,5 +57,5 @@ def handler(event, context):
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
             },
-            "body": '{"Error": "Bus details are missing"}',
+            "body": '{"Error": "Association details are missing"}',
         }

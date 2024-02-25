@@ -22,9 +22,30 @@ def handler(event, context):
         logger.info(f"Body: {body}")
 
         route_id = helper.generate_unique_id()
-        route_name = body.get("route_name", None)
-        bus_id = body.get("bus_id", None)
-        start_location = body.get("start_location", None)
-        end_location = body.get("end_location", None)
-        start_time = body.get("start_time", None)
-        end_time = body.get("end_time", None)
+        created_at = int(time.time())
+
+        body["route_id"] = route_id
+        body["created_at"] = created_at
+
+        helper.save_route_to_ddb(**body)
+        return {
+            "statusCode": 200,
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Methods": "*",
+            },
+            "body": '{"Route Saved - RouteId": "%s"}' % route_id,
+        }
+    else:
+        return {
+            "statusCode": 400,
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Methods": "*",
+            },
+            "body": '{"Error": "Route details are missing"}',
+        }

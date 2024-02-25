@@ -15,11 +15,10 @@ def handler(event, context):
 
     if event["queryStringParameters"] and "bus_id" in event["queryStringParameters"]:
         helper = Helper()
-        bus_id = event["queryStringParameters"]["bus_id"]
-        logger.info(f"bus_id: {bus_id}")
-
-        bus = helper.get_bus_details_by_busid(bus_id)
-        if bus:
+        driver_id = event["queryStringParameters"]["driver_id"]
+        logger.info(f"DriverId: {driver_id}")
+        driver = helper.get_driver_details_by_driver_id(driver_id)
+        if driver:
             return {
                 "statusCode": 200,
                 "headers": {
@@ -28,7 +27,7 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": json.dumps(bus),
+                "body": json.dumps(driver),
             }
         else:
             return {
@@ -39,16 +38,5 @@ def handler(event, context):
                     "Access-Control-Allow-Headers": "*",
                     "Access-Control-Allow-Methods": "*",
                 },
-                "body": '{"Error": "Bus is missing"}',
+                "body": '{"Error": "Driver is missing"}',
             }
-    else:
-        return {
-            "statusCode": 400,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "*",
-                "Access-Control-Allow-Methods": "*",
-            },
-            "body": '{"Error": "Bus details are missing"}',
-        }

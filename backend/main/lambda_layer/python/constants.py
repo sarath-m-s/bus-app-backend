@@ -13,8 +13,7 @@ ENROL_BUS_LAMBDA = "enrol_bus"
 GET_BUS_DETAILS_LAMBDA = "get_bus_details"
 ENROL_ROUTE_LAMBDA = "enrol_route"
 GET_ROUTE_DETAILS_LAMBDA = "get_route_details"
-ASSOCIATE_BUS_ROUTE_LAMBDA = "associate_bus_route"
-
+ASSOCIATE_DRIVER_BUS_ROUTE_LAMBDA = "associate_driver_bus_route"
 
 # Dynamo DB
 GEO_LOCATION_TABLE = "geo_location"
@@ -25,6 +24,8 @@ DRIVER_MASTER_TABLE = "driver_master"
 DRIVER_MASTER_TABLE_PARTITION_KEY = "driver_id"
 ROUTE_MASTER_TABLE = "route_master"
 ROUTE_MASTER_TABLE_PARTITION_KEY = "route_id"
+ASSOCIATION_TABLE = "association"
+ASSOCIATION_TABLE_PARTITION_KEY = "association_id"
 
 # API Gateway
 SAVE_GEO_LOCATION_API_GATEWAY_NAME = "save_geo_location_api"
@@ -43,8 +44,12 @@ ENROL_ROUTE_API_GATEWAY_NAME = "enrol_route_api"
 ENROL_ROUTE_API_GATEWAY_PATH = [f"{APPLICATION_NAME}", "enrol", "route"]
 GET_ROUTE_DETAILS_API_GATEWAY_NAME = "get_route_details_api"
 GET_ROUTE_DETAILS_API_GATEWAY_PATH = [f"{APPLICATION_NAME}", "get", "route-details"]
-ASSOCIATE_BUS_ROUTE_API_GATEWAY_NAME = "associate_bus_route_api"
-ASSOCIATE_BUS_ROUTE_API_GATEWAY_PATH = [f"{APPLICATION_NAME}", "associate", "bus-route"]
+ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_NAME = "associate_bus_route_api"
+ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH = [
+    f"{APPLICATION_NAME}",
+    "associate",
+    "driver-bus-route",
+]
 
 # IAM
 CLOUDWATCH_LOGS_PERMISSIONS = [
