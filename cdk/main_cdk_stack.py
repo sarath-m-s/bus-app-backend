@@ -61,6 +61,20 @@ class BusAppAwsStack(Stack):
         self.associate_driver_bus_route_api = (
             self.create_associate_driver_bus_route_api(**kwargs)
         )
+        self.get_all_driver_details_lambda = self.create_get_all_driver_details_lambda(
+            **kwargs
+        )
+        self.get_all_driver_details_api = self.create_get_all_driver_details_api(
+            **kwargs
+        )
+        self.get_all_bus_details_lambda = self.create_get_all_bus_details_lambda(
+            **kwargs
+        )
+        self.get_all_bus_details_api = self.create_get_all_bus_details_api(**kwargs)
+        self.get_all_route_details_lambda = self.create_get_all_route_details_lambda(
+            **kwargs
+        )
+        self.get_all_route_details_api = self.create_get_all_route_details_api(**kwargs)
 
     def create_textract_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
@@ -615,3 +629,181 @@ class BusAppAwsStack(Stack):
         )
 
         return associate_driver_bus_route_api
+
+    def create_get_all_driver_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_all_driver_details_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_driver_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetAllDriverDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_all_driver_details_lambda = DeployLambdaStack(
+            self,
+            "GetAllDriverDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_all_driver_details_lambda
+
+    def create_get_all_driver_details_api(self, **kwargs):
+        api_properties = self.config.get_config(
+            "get_all_driver_details_apigw_properties"
+        )
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_all_driver_details_lambda.lambda_function
+
+        get_all_driver_details_api = ApiGatewayStack(
+            self,
+            "GetAllDriverDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_all_driver_details_api
+
+    def create_get_all_bus_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_all_bus_details_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_bus_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetAllBusDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_all_bus_details_lambda = DeployLambdaStack(
+            self,
+            "GetAllBusDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_all_bus_details_lambda
+
+    def create_get_all_bus_details_api(self, **kwargs):
+        api_properties = self.config.get_config("get_all_bus_details_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_all_bus_details_lambda.lambda_function
+
+        get_all_bus_details_api = ApiGatewayStack(
+            self,
+            "GetAllBusDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_all_bus_details_api
+
+    def create_get_all_route_details_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_all_route_details_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_route_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetAllRouteDetailsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_all_route_details_lambda = DeployLambdaStack(
+            self,
+            "GetAllRouteDetailsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_all_route_details_lambda
+
+    def create_get_all_route_details_api(self, **kwargs):
+        api_properties = self.config.get_config(
+            "get_all_route_details_apigw_properties"
+        )
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_all_route_details_lambda.lambda_function
+
+        get_all_route_details_api = ApiGatewayStack(
+            self,
+            "GetAllRouteDetailsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_all_route_details_api

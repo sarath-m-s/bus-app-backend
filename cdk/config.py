@@ -181,6 +181,63 @@ class Config:
             "event_source_mapping_properties": {},
         }
 
+        self.__get_all_driver_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_ALL_DRIVER_DETAILS,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_all_driver_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get all driver details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__get_all_bus_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_ALL_BUS_DETAILS,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_all_bus_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get all bus details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
+        self.__get_all_route_details_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_ALL_ROUTE_DETAILS,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_all_route_details.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get all route details",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
         self.__geo_location_ddb_properties = {
             "name": GEO_LOCATION_TABLE,
             "partition_key": GEO_LOCATION_TABLE_PARTITION_KEY,
@@ -303,6 +360,39 @@ class Config:
             },
             "part_path": ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH,
             "method": "POST",
+        }
+
+        self.__get_all_driver_details_apigw_properties = {
+            "rest_api_name": GET_ALL_DRIVER_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_ALL_DRIVER_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
+        self.__get_all_bus_details_apigw_properties = {
+            "rest_api_name": GET_ALL_BUS_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_ALL_BUS_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
+        self.__get_all_route_details_apigw_properties = {
+            "rest_api_name": GET_ALL_ROUTE_DETAILS_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_ALL_ROUTE_DETAILS_API_GATEWAY_PATH,
+            "method": "GET",
         }
 
     def get_config(self, property_name: str) -> dict:

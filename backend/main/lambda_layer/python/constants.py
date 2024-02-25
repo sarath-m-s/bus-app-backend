@@ -14,6 +14,9 @@ GET_BUS_DETAILS_LAMBDA = "get_bus_details"
 ENROL_ROUTE_LAMBDA = "enrol_route"
 GET_ROUTE_DETAILS_LAMBDA = "get_route_details"
 ASSOCIATE_DRIVER_BUS_ROUTE_LAMBDA = "associate_driver_bus_route"
+GET_ALL_DRIVER_DETAILS = "get_all_driver_details"
+GET_ALL_BUS_DETAILS = "get_all_bus_details"
+GET_ALL_ROUTE_DETAILS = "get_all_route_details"
 
 # Dynamo DB
 GEO_LOCATION_TABLE = "geo_location"
@@ -50,6 +53,21 @@ ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH = [
     "associate",
     "driver-bus-route",
 ]
+GET_ALL_DRIVER_DETAILS_API_GATEWAY_NAME = "get_all_driver_details_api"
+GET_ALL_DRIVER_DETAILS_API_GATEWAY_PATH = [
+    f"{APPLICATION_NAME}",
+    "get",
+    "all-driver-details",
+]
+GET_ALL_BUS_DETAILS_API_GATEWAY_NAME = "get_all_bus_details_api"
+GET_ALL_BUS_DETAILS_API_GATEWAY_PATH = [f"{APPLICATION_NAME}", "get", "all-bus-details"]
+GET_ALL_ROUTE_DETAILS_API_GATEWAY_NAME = "get_all_route_details_api"
+GET_ALL_ROUTE_DETAILS_API_GATEWAY_PATH = [
+    f"{APPLICATION_NAME}",
+    "get",
+    "all-route-details",
+]
+
 
 # IAM
 CLOUDWATCH_LOGS_PERMISSIONS = [

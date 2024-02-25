@@ -130,3 +130,51 @@ class Helper:
                 "created_at": kwargs["created_at"],
             }
         )
+
+    def get_all_driver_details(self):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(DRIVER_MASTER_TABLE)
+        try:
+            response = table.scan()
+            driver_details = []
+            for driver in response["Items"]:
+                driver["driver_name"] = driver["driver_name"]
+                driver["driver_id"] = driver["driver_id"]
+                driver_details.append(driver)
+            return driver_details
+
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+
+    def get_all_bus_details(self):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(BUS_MASTER_TABLE)
+        try:
+            response = table.scan()
+            bus_details = []
+            for bus in response["Items"]:
+                bus["bus_name"] = bus["bus_name"]
+                bus["bus_id"] = bus["bus_id"]
+                bus_details.append(bus)
+            return bus_details
+
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+
+    def get_all_route_details(self):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ROUTE_MASTER_TABLE)
+        try:
+            response = table.scan()
+            route_details = []
+            for route in response["Items"]:
+                route["route_name"] = route["route_name"]
+                route["route_id"] = route["route_id"]
+                route_details.append(route)
+            return route_details
+
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
