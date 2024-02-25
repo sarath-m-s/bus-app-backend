@@ -1,10 +1,10 @@
 from re import T
+
+from aws_cdk import aws_apigateway as apigw
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as targets
+
 from backend.main.lambda_layer.python.constants import *
-from aws_cdk import (
-    aws_events_targets as targets,
-    aws_events as events,
-    aws_apigateway as apigw,
-)
 
 
 class Config:
@@ -48,6 +48,25 @@ class Config:
             "event_source_mapping_properties": {},
         }
 
+        self.__enrol_driver_lambda_properties = {
+            "lambda_function": {
+                "function_name": ENROL_DRIVER_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "enrol_driver.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to enrol driver",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
         self.__geo_location_ddb_properties = {
             "name": GEO_LOCATION_TABLE,
             "partition_key": GEO_LOCATION_TABLE_PARTITION_KEY,
@@ -73,6 +92,22 @@ class Config:
             },
             "part_path": GET_GEO_LOCATION_API_GATEWAY_PATH,
             "method": "GET",
+        }
+
+        self.__enrol_driver_ddb_properties = {
+            "name": DRIVER_MASTER_TABLE,
+            "partition_key": DRIVER_MASTER_TABLE_PARTITION_KEY,
+        }
+
+        self.__enrol_driver_apigw_properties = {
+            "rest_api_name": ENROL_DRIVER_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": ENROL_DRIVER_API_GATEWAY_PATH,
+            "method": "POST",
         }
 
     def get_config(self, property_name: str) -> dict:

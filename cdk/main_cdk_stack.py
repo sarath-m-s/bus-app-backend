@@ -1,23 +1,23 @@
 from aws_cdk import Stack
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_stepfunctions as sfn
+from aws_cdk import aws_stepfunctions_tasks as tasks
 from constructs import Construct
-from .sqs_stack import SqsStack
-from .lambda_stack import DeployLambdaStack
-from .ddb_stack import DynamoDBStack
-from .apigw_stack import ApiGatewayStack
-from .eventbridge_stack import EventBridgeStack
-from .config import Config
-from .iam_stack import Iam
-from .s3_stack import S3Stack
-from .step_functions_stack import StepFunctionsStack
-from aws_cdk import (
-    aws_iam as iam,
-    aws_stepfunctions_tasks as tasks,
-    aws_stepfunctions as sfn,
-)
+
 from backend.main.lambda_layer.python.constants import (
     CLOUDWATCH_LOGS_PERMISSIONS,
     CLOUDWATCH_LOGS_RESOURCES,
 )
+
+from .apigw_stack import ApiGatewayStack
+from .config import Config
+from .ddb_stack import DynamoDBStack
+from .eventbridge_stack import EventBridgeStack
+from .iam_stack import Iam
+from .lambda_stack import DeployLambdaStack
+from .s3_stack import S3Stack
+from .sqs_stack import SqsStack
+from .step_functions_stack import StepFunctionsStack
 
 
 class BusAppAwsStack(Stack):
@@ -37,6 +37,9 @@ class BusAppAwsStack(Stack):
         )
         self.save_geo_location_api = self.create_save_geo_location_api(**kwargs)
         self.get_geo_location_api = self.create_get_geo_location_api(**kwargs)
+        self.enrol_driver_ddb = self.create_enrol_driver_ddb_table(**kwargs)
+        self.enrol_driver_lambda = self.create_enrol_driver_lambda(**kwargs)
+        self.enrol_driver_api = self.create_enrol_driver_api(**kwargs)
 
     def create_textract_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
@@ -93,7 +96,7 @@ class BusAppAwsStack(Stack):
 
         lambda_permissions = [
             "dynamodb:GetItem",
-            "dynamodb:Query"
+            "dynamodb:Query",
         ] + self.cw_logs_permissions
 
         lambda_resources = [
@@ -159,3 +162,67 @@ class BusAppAwsStack(Stack):
         )
 
         return get_geo_location_api
+
+    def create_enrol_driver_ddb_table(self, **kwargs):
+        ddb_table = DynamoDBStack(
+            self,
+            "BusAppDDBTable",
+            self.config.get_config("enrol_driver_ddb_properties"),
+            **kwargs,
+        )
+        return ddb_table
+
+    def create_enrol_driver_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config("enrol_driver_lambda_properties")
+
+        lambda_permissions = [
+            "dynamodb:PutItem",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.enrol_driver_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "EnrolDriverLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        enrol_driver_lambda = DeployLambdaStack(
+            self,
+            "EnrolDriverLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return enrol_driver_lambda
+
+    def create_enrol_driver_api(self, **kwargs):
+        api_properties = self.config.get_config("enrol_driver_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.enrol_driver_lambda.lambda_function
+
+        enrol_driver_api = ApiGatewayStack(
+            self,
+            "EnrolDriverApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return enrol_driver_api
