@@ -166,7 +166,7 @@ class BusAppAwsStack(Stack):
     def create_enrol_driver_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
             self,
-            "BusAppDDBTable",
+            "EnrolDriverDDBTable",
             self.config.get_config("enrol_driver_ddb_properties"),
             **kwargs,
         )
