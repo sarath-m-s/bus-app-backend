@@ -67,17 +67,21 @@ class Helper:
     def save_driver_to_ddb(self, **kwargs):
         dynamodb = boto3.resource("dynamodb")
         table = dynamodb.Table(DRIVER_MASTER_TABLE)
-        response = table.put_item(
-            Item={
-                "driver_id": kwargs["driver_id"],
-                "driver_name": kwargs["driver_name"],
-                "contact_number": kwargs["contact_number"],
-                "license_number": kwargs.get("license_number", "Not Provided"),
-                "organization": kwargs.get("organization", "Not Provided"),
-                "address": kwargs.get("address", "Not Provided"),
-                "created_at": kwargs["created_at"],
-            }
-        )
+        try:
+            response = table.put_item(
+                Item={
+                    "driver_id": kwargs["driver_id"],
+                    "driver_name": kwargs["driver_name"],
+                    "contact_number": kwargs["contact_number"],
+                    "license_number": kwargs.get("license_number", "Not Provided"),
+                    "organization": kwargs.get("organization", "Not Provided"),
+                    "address": kwargs.get("address", "Not Provided"),
+                    "created_at": kwargs["created_at"],
+                }
+            )
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
 
     def get_driver_details_by_driver_id(self, driver_id):
         dynamodb = boto3.resource("dynamodb")

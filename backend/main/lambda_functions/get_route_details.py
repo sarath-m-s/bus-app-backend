@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     logger.info(f"Event: {event}")
 
-    if event["queryStringParameters"] and "bus_id" in event["queryStringParameters"]:
+    if event["queryStringParameters"] and "route_id" in event["queryStringParameters"]:
         helper = Helper()
         route_id = event["queryStringParameters"]["route_id"]
 
