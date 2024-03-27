@@ -5,7 +5,7 @@ import requests
 from backend.main.lambda_layer.python.constants import *
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     if event["queryStringParameters"] and "origin_lat" in event["queryStringParameters"] and "origin_lng" in event["queryStringParameters"] and "destination_lat" in event["queryStringParameters"] and "destination_lng" in event["queryStringParameters"]:
         origin_lat = event['queryStringParameters']['origin_lat']
         origin_lng = event['queryStringParameters']['origin_lng']

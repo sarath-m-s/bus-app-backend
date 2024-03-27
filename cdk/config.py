@@ -423,6 +423,17 @@ class Config:
             "method": "GET",
         }
 
+        self.__get_assciation_id_by_route_bus_driver_apigw_properties = {
+            "rest_api_name": GET_ASSOCIATION_ID_BY_ROUTE_BUS_DRIVER_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_ASSOCIATION_ID_BY_ROUTE_BUS_DRIVER_API_GATEWAY_PATH,
+            "method": "GET",
+        }
+
         self.__get_all_driver_details_apigw_properties = {
             "rest_api_name": GET_ALL_DRIVER_DETAILS_API_GATEWAY_NAME,
             "api_key_required": False,

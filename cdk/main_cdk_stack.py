@@ -65,6 +65,13 @@ class BusAppAwsStack(Stack):
         self.get_driver_bus_route_association_api = (
             self.create_get_driver_bus_route_association_api(**kwargs)
         )
+        self.get_route_bus_driver_association_lambda = (
+            self.create_get_route_bus_driver_association_lambda(**kwargs)
+        )
+        self.get_route_bus_driver_association_api = (
+            self.create_get_route_bus_driver_association_api(**kwargs)
+        )
+
         self.get_all_driver_details_lambda = self.create_get_all_driver_details_lambda(
             **kwargs
         )
@@ -685,7 +692,7 @@ class BusAppAwsStack(Stack):
 
         api_properties["integration"][
             "lambda_function"
-        ] = self.get_driver_bus_route_association_lambda.lambda_function
+        ] = self.get_route_bus_driver_association_lambda.lambda_function
 
         get_driver_bus_route_association_api = ApiGatewayStack(
             self,
@@ -695,6 +702,67 @@ class BusAppAwsStack(Stack):
         )
 
         return get_driver_bus_route_association_api
+
+    
+    def create_get_route_bus_driver_association_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_driver_bus_route_association_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.associate_driver_bus_route_ddb_table.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetRouteBusDriverAssociationLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_route_bus_driver_association_lambda = DeployLambdaStack(
+            self,
+            "GetRouteBusDriverAssociationLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_route_bus_driver_association_lambda
+
+    def create_get_route_bus_driver_association_api(self, **kwargs):
+        api_properties = self.config.get_config(
+            "get_driver_bus_route_association_apigw_properties"
+        )
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_route_bus_driver_association_lambda.lambda_function
+
+        get_route_bus_driver_association_api = ApiGatewayStack(
+            self,
+            "GetRouteBusDriverAssociationApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_route_bus_driver_association_api
 
     def create_get_all_driver_details_lambda(self, **kwargs):
         lambda_properties = self.config.get_config(

@@ -178,3 +178,51 @@ class Helper:
         except ClientError as e:
             logger.error(e.response["Error"]["Message"])
             return None
+
+    def get_driver_bus_route_association_by_association_id(self, association_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ASSOCIATION_TABLE)
+        try:
+            response = table.query(
+                KeyConditionExpression=Key("association_id").eq(association_id)
+            )
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+
+    def get_association_id_by_route_id(self, route_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ASSOCIATION_TABLE)
+        try:
+            response = table.scan(
+                FilterExpression=Key("route_id").eq(route_id)
+            )
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+        
+    def get_association_id_by_bus_id(self, bus_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ASSOCIATION_TABLE)
+        try:
+            response = table.scan(
+                FilterExpression=Key("bus_id").eq(bus_id)
+            )
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None
+        
+    def get_association_id_by_driver_id(self, driver_id):
+        dynamodb = boto3.resource("dynamodb")
+        table = dynamodb.Table(ASSOCIATION_TABLE)
+        try:
+            response = table.scan(
+                FilterExpression=Key("driver_id").eq(driver_id)
+            )
+            return response["Items"]
+        except ClientError as e:
+            logger.error(e.response["Error"]["Message"])
+            return None

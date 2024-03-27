@@ -15,6 +15,9 @@ ENROL_ROUTE_LAMBDA = "enrol_route"
 GET_ROUTE_DETAILS_LAMBDA = "get_route_details"
 ASSOCIATE_DRIVER_BUS_ROUTE_LAMBDA = "associate_driver_bus_route"
 GET_DRIVER_BUS_ROUTE_ASSOCIATION_LAMBDA = "get_driver_bus_route_association"
+GET_ASSOCIATION_ID_BY_ROUTE_ID_LAMBDA = "get_association_id_by_route_id"
+GET_ASSOCIATION_ID_BY_BUS_ID_LAMBDA = "get_association_id_by_bus_id"
+GET_ASSOCIATION_ID_BY_DRIVER_ID_LAMBDA = "get_association_id_by_driver_id"
 GET_ALL_DRIVER_DETAILS = "get_all_driver_details"
 GET_ALL_BUS_DETAILS = "get_all_bus_details"
 GET_ALL_ROUTE_DETAILS = "get_all_route_details"
@@ -62,6 +65,14 @@ GET_DRIVER_BUS_ROUTE_ASSOCIATION_API_GATEWAY_PATH = [
     f"{APPLICATION_NAME}",
     "get",
     "driver-bus-route-association",
+]
+GET_ASSOCIATION_ID_BY_ROUTE_BUS_DRIVER_API_GATEWAY_NAME = (
+    "get_association_id_by_route_bus_driver_api"
+)
+GET_ASSOCIATION_ID_BY_ROUTE_BUS_DRIVER_API_GATEWAY_PATH = [
+    f"{APPLICATION_NAME}",
+    "get",
+    "association-id",
 ]
 GET_ALL_DRIVER_DETAILS_API_GATEWAY_NAME = "get_all_driver_details_api"
 GET_ALL_DRIVER_DETAILS_API_GATEWAY_PATH = [
