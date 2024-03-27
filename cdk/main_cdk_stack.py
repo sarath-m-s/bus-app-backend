@@ -879,7 +879,7 @@ class BusAppAwsStack(Stack):
 
     
     def create_google_maps_lambda(self, **kwargs):
-        lambda_properties = self.config.get_config("google_maps_lambda_properties")
+        lambda_properties = self.config.get_config("google_maps_wrapper_lambda_properties")
 
         lambda_permissions = [
             "dynamodb:PutItem",
@@ -918,7 +918,7 @@ class BusAppAwsStack(Stack):
         return google_maps_lambda
     
     def create_google_maps_api(self, **kwargs):
-        api_properties = self.config.get_config("google_maps_apigw_properties")
+        api_properties = self.config.get_config("google_maps_wrapper_apigw_properties")
 
         api_properties["integration"][
             "lambda_function"
