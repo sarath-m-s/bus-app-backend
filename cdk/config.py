@@ -200,6 +200,25 @@ class Config:
             "event_source_mapping_properties": {},
         }
 
+        self.__get_association_id_by_route_bus_driver_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_ASSOCIATION_ID_BY_BUS_ROUTE_DRIVER_ID_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_association_id_by_route_bus_driver.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get association id by route, bus and driver",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
         self.__get_all_driver_details_lambda_properties = {
             "lambda_function": {
                 "function_name": GET_ALL_DRIVER_DETAILS,
