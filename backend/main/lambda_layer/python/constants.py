@@ -20,7 +20,7 @@ GET_ASSOCIATION_ID_BY_BUS_ROUTE_DRIVER_ID_LAMBDA = "get_association_id_by_bus_ro
 # GET_ASSOCIATION_ID_BY_DRIVER_ID_LAMBDA = "get_association_id_by_driver_id"
 GET_ALL_DRIVER_DETAILS = "get_all_driver_details"
 GET_ALL_BUS_DETAILS = "get_all_bus_details"
-GET_ALL_ROUTE_DETAILS = "get_all_route_∂details"
+GET_ALL_ROUTE_DETAILS = "get_all_route_details"
 GOOGLE_MAPS_WRAPPER_LAMBDA = "google_mƒaps_wrapper"
 
 # Dynamo DB
