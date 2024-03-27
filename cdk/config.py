@@ -181,6 +181,25 @@ class Config:
             "event_source_mapping_properties": {},
         }
 
+        self.__get_driver_bus_route_association_lambda_properties = {
+            "lambda_function": {
+                "function_name": GET_DRIVER_BUS_ROUTE_ASSOCIATION_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "get_driver_bus_route_association.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get driver, bus and route association",
+                "enable_put_metric_data": "False",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
         self.__get_all_driver_details_lambda_properties = {
             "lambda_function": {
                 "function_name": GET_ALL_DRIVER_DETAILS,
@@ -237,6 +256,26 @@ class Config:
             },
             "event_source_mapping_properties": {},
         }
+
+        self.__google_maps_wrapper_lambda_properties = {
+            "lambda_function": {
+                "function_name": GOOGLE_MAPS_WRAPPER_LAMBDA,
+                "asset_path": "backend/main/lambda_functions",
+                "handler": "google_maps_wrapper.handler",
+                "runtime": "python3.8",
+                "timeout": 300,
+                "memory_size": 128,
+                "description": "Lambda function to get google maps data",
+                "enable_put_metric_data": "True",
+            },
+            "lambda_layer": {
+                "asset_path": "backend/main/lambda_layer",
+                "layer_name": f"{APPLICATION_NAME}_lambda_layer",
+                "description": f"{APPLICATION_NAME} Layer",
+            },
+            "event_source_mapping_properties": {},
+        }
+
 
         self.__geo_location_ddb_properties = {
             "name": GEO_LOCATION_TABLE,
@@ -319,6 +358,17 @@ class Config:
             "method": "GET",
         }
 
+        self.__google_maps_wrapper_apigw_properties = {
+            "rest_api_name": GOOGLE_MAPS_WRAPPER_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GOOGLE_MAPS_WRAPPER_API_GATEWAY_PATH,
+            "method": "POST",
+        }
+
         self.__enrol_route_ddb_properties = {
             "name": ROUTE_MASTER_TABLE,
             "partition_key": ROUTE_MASTER_TABLE_PARTITION_KEY,
@@ -360,6 +410,17 @@ class Config:
             },
             "part_path": ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH,
             "method": "POST",
+        }
+
+        self.__get_driver_bus_route_association_apigw_properties = {
+            "rest_api_name": GET_DRIVER_BUS_ROUTE_ASSOCIATION_API_GATEWAY_NAME,
+            "api_key_required": False,
+            "timeout": 10,
+            "integration": {
+                "type": "lambda",
+            },
+            "part_path": GET_DRIVER_BUS_ROUTE_ASSOCIATION_API_GATEWAY_PATH,
+            "method": "GET",
         }
 
         self.__get_all_driver_details_apigw_properties = {

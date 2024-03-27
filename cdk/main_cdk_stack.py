@@ -5,9 +5,7 @@ from aws_cdk import aws_stepfunctions_tasks as tasks
 from constructs import Construct
 
 from backend.main.lambda_layer.python.constants import (
-    CLOUDWATCH_LOGS_PERMISSIONS,
-    CLOUDWATCH_LOGS_RESOURCES,
-)
+    CLOUDWATCH_LOGS_PERMISSIONS, CLOUDWATCH_LOGS_RESOURCES)
 
 from .apigw_stack import ApiGatewayStack
 from .config import Config
@@ -55,11 +53,17 @@ class BusAppAwsStack(Stack):
         self.associate_driver_bus_route_ddb_table = (
             self.create_associate_driver_bus_route_ddb_table(**kwargs)
         )
+        self.get_driver_bus_route_association_lambda = (
+            self.create_get_driver_bus_route_association_lambda(**kwargs)
+        )
         self.associate_driver_bus_route_lambda = (
             self.create_associate_driver_bus_route_lambda(**kwargs)
         )
         self.associate_driver_bus_route_api = (
             self.create_associate_driver_bus_route_api(**kwargs)
+        )
+        self.get_driver_bus_route_association_api = (
+            self.create_get_driver_bus_route_association_api(**kwargs)
         )
         self.get_all_driver_details_lambda = self.create_get_all_driver_details_lambda(
             **kwargs
@@ -75,6 +79,8 @@ class BusAppAwsStack(Stack):
             **kwargs
         )
         self.get_all_route_details_api = self.create_get_all_route_details_api(**kwargs)
+        self.google_maps_lambda = self.create_google_maps_lambda(**kwargs)
+        self.google_maps_api = self.create_google_maps_api(**kwargs)
 
     def create_textract_ddb_table(self, **kwargs):
         ddb_table = DynamoDBStack(
@@ -612,6 +618,48 @@ class BusAppAwsStack(Stack):
 
         return associate_driver_bus_route_lambda
 
+    def create_get_driver_bus_route_association_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config(
+            "get_driver_bus_route_association_lambda_properties"
+        )
+
+        lambda_permissions = [
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.associate_driver_bus_route_ddb_table.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GetDriverBusRouteAssociationLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        get_driver_bus_route_association_lambda = DeployLambdaStack(
+            self,
+            "GetDriverBusRouteAssociationLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return get_driver_bus_route_association_lambda
+
     def create_associate_driver_bus_route_api(self, **kwargs):
         api_properties = self.config.get_config(
             "associate_driver_bus_route_apigw_properties"
@@ -629,6 +677,24 @@ class BusAppAwsStack(Stack):
         )
 
         return associate_driver_bus_route_api
+
+    def create_get_driver_bus_route_association_api(self, **kwargs):
+        api_properties = self.config.get_config(
+            "get_driver_bus_route_association_apigw_properties"
+        )
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.get_driver_bus_route_association_lambda.lambda_function
+
+        get_driver_bus_route_association_api = ApiGatewayStack(
+            self,
+            "GetDriverBusRouteAssociationApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return get_driver_bus_route_association_api
 
     def create_get_all_driver_details_lambda(self, **kwargs):
         lambda_properties = self.config.get_config(
@@ -810,3 +876,59 @@ class BusAppAwsStack(Stack):
         )
 
         return get_all_route_details_api
+
+    
+    def create_google_maps_lambda(self, **kwargs):
+        lambda_properties = self.config.get_config("google_maps_lambda_properties")
+
+        lambda_permissions = [
+            "dynamodb:PutItem",
+        ] + self.cw_logs_permissions
+
+        lambda_resources = [
+            self.geo_location_ddb.get_ddb_table_arn
+        ] + self.cw_logs_resources
+
+        lambda_policy_statement = [
+            iam.PolicyStatement(
+                actions=lambda_permissions,
+                resources=lambda_resources,
+            ),
+            iam.PolicyStatement(
+                actions=["cloudwatch:PutMetricData"],
+                resources=["*"],
+            ),
+        ]
+
+        lambda_role = Iam(
+            self,
+            "GoogleMapsLambdaRole",
+            assumed_by="lambda.amazonaws.com",
+            policy_statements=lambda_policy_statement,
+        ).get_role
+
+        google_maps_lambda = DeployLambdaStack(
+            self,
+            "GoogleMapsLambda",
+            lambda_properties,
+            lambda_role,
+            **kwargs,
+        )
+
+        return google_maps_lambda
+    
+    def create_google_maps_api(self, **kwargs):
+        api_properties = self.config.get_config("google_maps_apigw_properties")
+
+        api_properties["integration"][
+            "lambda_function"
+        ] = self.create_google_maps_lambda.lambda_function
+
+        google_maps_api = ApiGatewayStack(
+            self,
+            "GoogleMapsApi",
+            api_properties,
+            **kwargs,
+        )
+
+        return google_maps_api

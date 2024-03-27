@@ -14,9 +14,11 @@ GET_BUS_DETAILS_LAMBDA = "get_bus_details"
 ENROL_ROUTE_LAMBDA = "enrol_route"
 GET_ROUTE_DETAILS_LAMBDA = "get_route_details"
 ASSOCIATE_DRIVER_BUS_ROUTE_LAMBDA = "associate_driver_bus_route"
+GET_DRIVER_BUS_ROUTE_ASSOCIATION_LAMBDA = "get_driver_bus_route_association"
 GET_ALL_DRIVER_DETAILS = "get_all_driver_details"
 GET_ALL_BUS_DETAILS = "get_all_bus_details"
 GET_ALL_ROUTE_DETAILS = "get_all_route_details"
+GOOGLE_MAPS_WRAPPER_LAMBDA = "google_maps_wrapper"
 
 # Dynamo DB
 GEO_LOCATION_TABLE = "geo_location"
@@ -53,6 +55,14 @@ ASSOCIATE_DRIVER_BUS_ROUTE_API_GATEWAY_PATH = [
     "associate",
     "driver-bus-route",
 ]
+GET_DRIVER_BUS_ROUTE_ASSOCIATION_API_GATEWAY_NAME = (
+    "get_driver_bus_route_association_api"
+)
+GET_DRIVER_BUS_ROUTE_ASSOCIATION_API_GATEWAY_PATH = [
+    f"{APPLICATION_NAME}",
+    "get",
+    "driver-bus-route-association",
+]
 GET_ALL_DRIVER_DETAILS_API_GATEWAY_NAME = "get_all_driver_details_api"
 GET_ALL_DRIVER_DETAILS_API_GATEWAY_PATH = [
     f"{APPLICATION_NAME}",
@@ -67,6 +77,8 @@ GET_ALL_ROUTE_DETAILS_API_GATEWAY_PATH = [
     "get",
     "all-route-details",
 ]
+GOOGLE_MAPS_WRAPPER_API_GATEWAY_NAME = "google_maps_wrapper_api"
+GOOGLE_MAPS_WRAPPER_API_GATEWAY_PATH = [f"{APPLICATION_NAME}", "google-maps-wrapper"]
 
 
 # IAM
@@ -76,3 +88,6 @@ CLOUDWATCH_LOGS_PERMISSIONS = [
     "logs:PutLogEvents",
 ]
 CLOUDWATCH_LOGS_RESOURCES = ["arn:aws:logs:*:*:*"]
+
+#Google Maps 
+GOOGLE_MAPS_API_KEY = "AIzaSyCCTN2hd3Ovs-yMeKTB0WeYBkMWm14MY7g"
