@@ -62,12 +62,10 @@ class BusAppAwsStack(Stack):
         self.associate_driver_bus_route_api = (
             self.create_associate_driver_bus_route_api(**kwargs)
         )
-        self.get_driver_bus_route_association_api = (
-            self.create_get_driver_bus_route_association_api(**kwargs)
-        )
         self.get_route_bus_driver_association_lambda = (
             self.create_get_route_bus_driver_association_lambda(**kwargs)
         )
+
         self.get_route_bus_driver_association_api = (
             self.create_get_route_bus_driver_association_api(**kwargs)
         )
