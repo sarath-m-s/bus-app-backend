@@ -922,7 +922,7 @@ class BusAppAwsStack(Stack):
 
         api_properties["integration"][
             "lambda_function"
-        ] = self.create_google_maps_lambda.lambda_function
+        ] = self.google_maps_lambda.lambda_function
 
         google_maps_api = ApiGatewayStack(
             self,
