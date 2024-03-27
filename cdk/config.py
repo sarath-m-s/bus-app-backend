@@ -366,7 +366,7 @@ class Config:
                 "type": "lambda",
             },
             "part_path": GOOGLE_MAPS_WRAPPER_API_GATEWAY_PATH,
-            "method": "POST",
+            "method": "GET",
         }
 
         self.__enrol_route_ddb_properties = {
