@@ -679,6 +679,7 @@ class BusAppAwsStack(Stack):
         lambda_permissions = [
             "dynamodb:GetItem",
             "dynamodb:Query",
+            "dynamodb:Scan"
         ] + self.cw_logs_permissions
 
         lambda_resources = [
