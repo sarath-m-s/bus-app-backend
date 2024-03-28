@@ -799,7 +799,7 @@ class BusAppAwsStack(Stack):
 
         api_properties["integration"][
             "lambda_function"
-        ] = self.get_route_bus_driver_association_lambda.lambda_function
+        ] = self.get_driver_bus_route_association_lambda.lambda_function
 
         get_route_bus_driver_association_api = ApiGatewayStack(
             self,
