@@ -23,6 +23,10 @@ def handler(event, context):
         association_id = helper.get_association_id_by_route_id(route_id)
         return {
             "statusCode": 200,
+            "headers": {"Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Methods": "*",},
             "body": json.dumps(
                 {
                     "association_id": association_id,
@@ -39,6 +43,10 @@ def handler(event, context):
         association_id = helper.get_association_id_by_bus_id(bus_id)
         return {
             "statusCode": 200,
+            "headers": {"Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Methods": "*",},
             "body": json.dumps(
                 {
                     "association_id": association_id,
@@ -55,6 +63,10 @@ def handler(event, context):
         association_id = helper.get_association_id_by_driver_id(driver_id)
         return {
             "statusCode": 200,
+            "headers": {"Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Methods": "*",},
             "body": json.dumps(
                 {
                     "association_id": association_id,
