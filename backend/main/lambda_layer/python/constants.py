@@ -1,7 +1,7 @@
 APPLICATION_NAME = "bta"
 
 # aws account details
-AWS_ACCOUNT = "310160951350"
+AWS_ACCOUNT = "************"
 AWS_REGION = "us-east-1"
 
 # Lambda
